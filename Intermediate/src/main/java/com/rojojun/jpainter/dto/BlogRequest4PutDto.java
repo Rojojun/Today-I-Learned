@@ -1,4 +1,4 @@
-package com.rojojun.jpanoviceprac;
+package com.rojojun.jpainter.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

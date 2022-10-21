@@ -1,5 +1,7 @@
-package com.rojojun.jpanoviceprac;
+package com.rojojun.jpainter.model;
 
+import com.rojojun.jpainter.dto.BlogRequest4PutDto;
+import com.rojojun.jpainter.dto.BlogRequestDto;
 import com.sun.istack.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

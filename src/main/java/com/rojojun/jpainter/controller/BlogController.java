@@ -1,5 +1,11 @@
-package com.rojojun.jpanoviceprac;
+package com.rojojun.jpainter.controller;
 
+import com.rojojun.jpainter.dto.BlogRequest4PutDto;
+import com.rojojun.jpainter.dto.BlogRequestDto;
+import com.rojojun.jpainter.dto.BlogResponseDto;
+import com.rojojun.jpainter.dto.MembersRequestDto;
+import com.rojojun.jpainter.service.BlogService;
+import com.rojojun.jpainter.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

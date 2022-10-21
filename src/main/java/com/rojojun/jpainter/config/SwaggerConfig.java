@@ -1,4 +1,4 @@
-package com.rojojun.jpanoviceprac;
+package com.rojojun.jpainter.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

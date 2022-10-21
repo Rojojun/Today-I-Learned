@@ -1,13 +1,13 @@
-package com.rojojun.jpanoviceprac;
+package com.rojojun.jpainter;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class JpaNovicePracApplication {
+public class JpaInterApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(JpaNovicePracApplication.class, args);
+        SpringApplication.run(JpaInterApplication.class, args);
     }
 
 }

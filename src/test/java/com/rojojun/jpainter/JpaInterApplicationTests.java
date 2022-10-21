@@ -1,10 +1,10 @@
-package com.rojojun.jpanoviceprac;
+package com.rojojun.jpainter;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class JpaNovicePracApplicationTests {
+class JpaInterApplicationTests {
 
     @Test
     void contextLoads() {

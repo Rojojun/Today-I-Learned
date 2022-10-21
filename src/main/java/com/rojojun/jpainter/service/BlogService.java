@@ -1,5 +1,10 @@
-package com.rojojun.jpanoviceprac;
+package com.rojojun.jpainter.service;
 
+import com.rojojun.jpainter.dto.BlogRequest4PutDto;
+import com.rojojun.jpainter.dto.BlogRequestDto;
+import com.rojojun.jpainter.dto.BlogResponseDto;
+import com.rojojun.jpainter.model.Blog;
+import com.rojojun.jpainter.repository.BlogRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
