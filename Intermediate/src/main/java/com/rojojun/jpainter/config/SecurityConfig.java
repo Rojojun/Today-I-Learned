@@ -26,7 +26,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/v2/api-docs",
                         "/swagger-resources/**",
                         "/webjars/**",
-                        "/swagger/**");
+                        "/swagger/**")
+                .antMatchers("/login/**");
     }
 
     @Override
@@ -34,7 +35,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         httpSecurity.csrf().disable();
         httpSecurity.authorizeRequests()
                 .anyRequest().authenticated()
-                .antMatchers("/login/**").permitAll()
                 .and()
                 .formLogin()
                 .loginPage("/login")
