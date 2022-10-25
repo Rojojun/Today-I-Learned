@@ -10,14 +10,16 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
 
+    // 회원가입 처리
     @PostMapping("/login/signup")
-    public ResponseEntity<Void> registNewMember(@RequestBody MembersRequestDto requestDto) {
+    public ResponseEntity<Void> registNewMember(@Valid @RequestBody MembersRequestDto requestDto) {
         memberService.registNewMember(requestDto);
         return ResponseEntity.ok().build();
     }

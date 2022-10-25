@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Blog {
+public class Blog extends TimeStamped {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
     private int id;

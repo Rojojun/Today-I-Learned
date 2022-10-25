@@ -18,28 +18,41 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class MemberService {
+    private static String validation = "^[a-zA-Z0-9]*$";
     private final MembersRepository membersRepository;
     @Autowired
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
     public void registNewMember(MembersRequestDto requestDto) {
 
         Members members = new Members(requestDto);
+        String nickname = members.getNickname();
+        String password = members.getPassword();
+
+        // 닉네임 중복 검증
+        Optional<Members> check = membersRepository.findByNickname(nickname);
+        if (check.isPresent()) {
+            throw new RuntimeException("중복된 ID 입니다.");
+        }
 
         // 받은 패스워드와 패스워드 검증이 같은지 확인
-        if (Objects.equals(requestDto.getPassword(), requestDto.getPasswordChk())) {
-            // 받은 패스워드를 암호화 하여 저장
-            String encodedPassword = bCryptPasswordEncoder.encode(requestDto.getPassword());
-            members.setPassword(encodedPassword);
-            members.setNickname(requestDto.getNickname());
-            membersRepository.save(members);
-        }
-        else {
+        if (!Objects.equals(password, requestDto.getPasswordChk())) {
             throw new RuntimeException("비밀번호 불일치 RuntimeException");
         }
+        else if (!Objects.equals(password, validation)){
+            throw new RuntimeException("비밀번호의 패턴이 일치하지 않습니다.\n알파벳 및 숫자만 가능합니다.");
+        }
+
+        // 받은 패스워드를 암호화 하여 저장
+        String encodedPassword = bCryptPasswordEncoder.encode(password);
+        members.setPassword(encodedPassword);
+        members.setNickname(nickname);
+        membersRepository.save(members);
     }
 
     public void loginMember(HttpServletRequest request, LoginDto loginDto) {
