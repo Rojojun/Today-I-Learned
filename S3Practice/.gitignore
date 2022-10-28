@@ -37,4 +37,4 @@ out/
 .vscode/
 
 ### My Own ignore ###
-application.properties
+!**/src/main/**/application.properties
