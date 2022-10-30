@@ -37,4 +37,4 @@ out/
 .vscode/
 
 ### My Own ignore ###
-!**/src/main/**/application.properties
+s3.properties

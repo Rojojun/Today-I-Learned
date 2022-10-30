@@ -1,0 +1,3 @@
+[submodule "S3Practice/Today-I-Learned"]
+	path = S3Practice/Today-I-Learned
+	url = https://github.com/Rojojun/Today-I-Learned.git
