@@ -1,8 +1,9 @@
 package com.rojojun.s3practice.service;
 
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.rojojun.s3practice.etc.UploadUtils;
+import com.rojojun.s3practice.model.PostImage;
 import org.springframework.beans.factory.annotation.*;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -21,13 +23,21 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class S3UploadService {
     private final AmazonS3Client amazonS3Client;
+    private UploadUtils uploadUtils;
 
     @Value("{cloud.aws.s3.bucket")
     private String bucket;
 
     public String uploadFiles(MultipartFile multipartFile, String dirName) throws IOException {
+        PostImage postImage = new PostImage();
+
         File uploadFile = convert(multipartFile)
                 .orElseThrow(() -> new IllegalArgumentException("error : MultipartFile -> File convert fail"));
+
+        HashMap<String, String> keyValue = uploadUtils.randomFileMap(multipartFile.getOriginalFilename(), dirName);
+        String keyOr = multipartFile.getOriginalFilename();
+        boolean key = keyValue.containsKey(keyOr);
+
         return upload(uploadFile, dirName);
     }
 
