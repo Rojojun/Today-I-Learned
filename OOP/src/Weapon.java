@@ -5,7 +5,6 @@ public class Weapon {
     int atkCycle;
     float range;
     void registWeapon(String name, int num) {
-        weaponName = name;
         int input = num;
         switch (input) {
             case 0 :
@@ -25,5 +24,20 @@ public class Weapon {
         }
         input = 0;
 
+        if (atkCycle > 36) {
+            throw new IllegalArgumentException("에러 : 올바르지 않은 유효값입니다.");
+        }
+        if (range > 12) {
+            throw new IllegalArgumentException("에러 : 올바르지 않은 유효값입니다.");
+        }
+        // 공격력은 int의 최대 값으로s
+        if (atk > Integer.MAX_VALUE - 1) {
+            throw new IllegalArgumentException("에러 : 올바르지 않은 유효값입니다.");
+        }
+        System.out.println("atk : " + atk);
+        System.out.println("cycle : " + atkCycle);
+        System.out.println("weapon name : " + name);
+        System.out.println("type : " + weaponType);
+        System.out.println("range : " + range);
     }
 }

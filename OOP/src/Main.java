@@ -14,5 +14,20 @@ public class Main {
         System.out.println("hi");
 
         System.out.println( unitInfo.showUnitInfo(Type.BIO, 50, false, 10));
+
+        Weapon weapon = new Weapon();
+
+        System.out.println("ATK?");
+        weapon.atk = scanner.nextInt();
+        System.out.println("ATK Cycle?");
+        weapon.atkCycle = scanner.nextInt();
+        System.out.println("ATK range");
+        weapon.range = scanner.nextInt();
+        System.out.println("ATK type?");
+        int input = scanner.nextInt();
+        System.out.println("Weapon Name");
+        String wName = scanner.next();
+        System.out.println("result");
+        weapon.registWeapon(wName, input);
     }
 }
