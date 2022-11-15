@@ -1,7 +1,8 @@
 package com.rojojun.s3practice.service;
 
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.rojojun.s3practice.etc.UploadUtils;
+import com.rojojun.s3practice.Exception.AwsCustomException;
+import com.rojojun.s3practice.Exception.ErrorCode;
 import com.rojojun.s3practice.model.PostImage;
 import com.rojojun.s3practice.repository.PostImageRepository;
 import org.springframework.beans.factory.annotation.*;
@@ -12,9 +13,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.swing.text.html.Option;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
@@ -26,20 +25,30 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class S3UploadService {
     private final AmazonS3Client amazonS3Client;
-   /* private UploadUtils uploadUtils;
-    private final PostImageRepository postImageRepository;*/
+    //private UploadUtils uploadUtils;
+    private PostImageRepository postImageRepository;
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
     /*
      * 컨트롤러에서 받은 upload 관련 메서드 수행
      * */
-    public PostImage uploadImage(MultipartFile multipartFile, String image) {
+    public PostImage uploadImage(MultipartFile multipartFile, String dirName) throws IOException {
         // 1. 경로, 파일 이름을 저장하기 위해 PostImage 객체 생성
         PostImage postImage = new PostImage();
         // 2. MultipartFile 타입으로 되어 있는 multipartFile변수 정보를 불러옴
         String ext = multipartFile.getOriginalFilename().substring(multipartFile.getOriginalFilename().lastIndexOf("."));
         // 3. 메서드 convertMultiPartFileToFile 역직렬화 되어있는 MultipartFile을 다시 File로 직렬화
-        File file = conver
+        //    이후 convertMultiPartFileToFile 메서드에서 파일에 대한 모든 정보를 저장하기 위해 처리
+        File file = convertMultiPartFileToFile(multipartFile).orElseThrow(() -> new AwsCustomException(ErrorCode.FILE_CONVERT_ERROR));
+        // 4. 랜덤한 파일 이름을 생성하는 메소드를 통해 key, S3에 저장된 업로드 경로를 통해 path를 Key, Value 형태로 저장함
+        String key = randomFileName(file, dirName);
+        String path = putS3(file, key);
+        // 5. 만들어진 파일을 현재 스토리지에서 삭제
+        // 파일 이동 절차 : 원본 -> 소스 / 빌드 스토리지 -> S3 (중간 매게체인 소스/빌드스토리지에는 있어야할 필요가 없음)
+
+        // 6. PostImage의 객체 형태로 반환하여 Key, Value값을 entity로 반환
+        postImage = new PostImage(path, key);
+        return postImage;
     }
     // 역직렬화된 MultiPartFile -> 직렬화 File
     // NPE 안전한 Optional 객체 사용하여, 예외처리
@@ -62,6 +71,11 @@ public class S3UploadService {
     public boolean chkValidation(String ext) {
         return true;
     }
+    // 원본의 파일을 받아 UUID의 랜덤값 + 원본 파일이름으로 되어 있는 형태로 같은 이름이 중복되지 않도록 하는 메소드
+    public String randomFileName(File file, String dirName){
+        return dirName + "/" + UUID.randomUUID() + file.getName();
+    }
+
 
     public PostImage uploadFiles(MultipartFile multipartFile, String dirName) throws IOException {
         PostImage postImage = new PostImage();
