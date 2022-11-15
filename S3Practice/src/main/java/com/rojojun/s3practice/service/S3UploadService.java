@@ -45,7 +45,7 @@ public class S3UploadService {
         String path = putS3(file, key);
         // 5. 만들어진 파일을 현재 스토리지에서 삭제
         // 파일 이동 절차 : 원본 -> 소스 / 빌드 스토리지 -> S3 (중간 매게체인 소스/빌드스토리지에는 있어야할 필요가 없음)
-
+        removeFile(file);
         // 6. PostImage의 객체 형태로 반환하여 Key, Value값을 entity로 반환
         postImage = new PostImage(path, key);
         return postImage;
@@ -67,6 +67,14 @@ public class S3UploadService {
         }
         // 비어있는 경우에 empty 메소드를 받아 exception 던진다.
         return Optional.empty();
+    }
+    private void removeFile(File file){
+        try {
+            // 파일 삭제 메서드 -> 직렬화된 파일을 지우는 내장 함수
+            file.delete();
+        } catch (Exception e){
+            new AwsCustomException(ErrorCode.FILE_CONVERT_ERROR);
+        }
     }
     public boolean chkValidation(String ext) {
         return true;
