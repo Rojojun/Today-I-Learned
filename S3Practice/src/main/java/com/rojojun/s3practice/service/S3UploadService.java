@@ -85,22 +85,7 @@ public class S3UploadService {
     }
 
 
-    public PostImage uploadFiles(MultipartFile multipartFile, String dirName) throws IOException {
-        PostImage postImage = new PostImage();
 
-        File uploadFile = convert(multipartFile)
-                .orElseThrow(() -> new IllegalArgumentException("error : MultipartFile -> File convert fail"));
-
-        HashMap<String, String> keyValue = uploadUtils.randomFileMap(multipartFile.getOriginalFilename(), dirName);
-        String key = String.valueOf(keyValue.keySet());
-        String value = String.valueOf(keyValue.values());
-
-        postImageRepository.save(new PostImage(key, value));
-
-        upload(uploadFile, dirName);
-
-        return postImage;
-    }
 
     public String upload(File uploadFile, String filePath) {
         String fileName = filePath + "/" + UUID.randomUUID() + uploadFile.getName();
