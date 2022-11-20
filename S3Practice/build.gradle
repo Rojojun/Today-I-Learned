@@ -30,17 +30,15 @@ dependencies {
 
     // S3, Spring-cloud-aws 의존성
     implementation 'io.awspring.cloud:spring-cloud-starter-aws:2.3.1'
-    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
-    implementation 'com.amazonaws:aws-java-sdk:1.11.404'
+    //implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+    //implementation 'com.amazonaws:aws-java-sdk:1.11.404'
+
 
     // MultipartFile 의존성
     implementation 'commons-io:commons-io:2.6'
 
 
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client', version: '2.4.3'
-
 }
 
 tasks.named('test') {
