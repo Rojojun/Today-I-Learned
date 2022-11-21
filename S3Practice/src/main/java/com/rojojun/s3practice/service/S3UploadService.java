@@ -8,6 +8,8 @@ import com.rojojun.s3practice.repository.PostImageRepository;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,18 +17,20 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
 @PropertySource("classpath:s3.properties")
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class S3UploadService {
     private final AmazonS3Client amazonS3Client;
     //private UploadUtils uploadUtils;
     private final PostImageRepository postImageRepository;
-    private String bucket = "rojojun-test-bucket®";
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucket;
     /*
      * 컨트롤러에서 받은 upload 관련 메서드 수행
      * */
@@ -119,26 +123,54 @@ public class S3UploadService {
         return Optional.empty();
     }
     // 여기서 부터는 동작 구동하는지 확인하기위해 만든 시험 코드
-    public String test(MultipartFile multipartFile, String dirName) throws IOException{
+    public void test(MultipartFile multipartFile, String dirName) throws IOException{
         // 역직렬화된 파일을 직렬화시켜서 변환 (자바 내부 Byte 형태로 변환하여 업로드 진행)
-        File uploadFile = convert(multipartFile)
-                .orElseThrow(() -> new RuntimeException());
-        return uploadFromLocal(uploadFile, dirName);
+        /*File uploadFile = convert(multipartFile)  // 파일 변환할 수 없으면 에러
+                .orElseThrow(() -> new IllegalArgumentException("error: MultipartFile -> File convert fail"));*/
+        File file = convertLocalFile(multipartFile).orElseThrow(() -> new AwsCustomException(ErrorCode.FILE_CONVERT_ERROR));
+        uploadFromLocal(file, dirName);
     }
 
-    private String uploadFromLocal(File uploadFile, String dirName) {
+    private void uploadFromLocal(File uploadFile, String dirName) {
         // Local -> 소스가 있는 directory
         String fileName = dirName + "/" + UUID.randomUUID() + uploadFile.getName();
         String uploadImageUrl = uploadFromSouceDir(uploadFile, fileName);
         // 소스가 있는 directory 파일에 있는 파일 제거 -> 불필요하게 저장되어 있기에 방지
-        removeTestFile(fileName);
-        return uploadImageUrl;
+        removeTestFile(uploadFile);
     }
 
     private String uploadFromSouceDir(File uploadFile, String fileName) {
         // 소스가 있는 dir -> S3
         amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, uploadFile).withCannedAcl(CannedAccessControlList.PublicRead));
         return amazonS3Client.getUrl(bucket, fileName).toString();
+    }
+
+    private void removeTestFile(File target) {
+        if (target.delete()) {
+            log.info("file delete success");
+            return;
+        }
+        log.warn("not deleted");
+    }
+
+    private Optional<File> convertLocalFile(MultipartFile file) throws IOException {
+        System.out.println("hi");
+        File convertFile = new File(Objects.requireNonNull(file.getOriginalFilename()));
+
+        // File convertFile = new File(System.getProperty("user.dirName") + "/" + file.getOriginalFilename());
+
+       /* if (!convertFile.getParentFile().exists())
+            convertFile.getParentFile().mkdirs();*/
+        // 직렬화된 파일을 로컬에서 소스 경로로 복제
+        if (convertFile.createNewFile()) {
+            // 복제된 파일을 생성화
+            try (FileOutputStream fileOutputStream = new FileOutputStream(convertFile)){
+                // 바이트 단위로 구조화 된 파일을 읽어서 저장
+                fileOutputStream.write(file.getBytes());
+            }
+            return Optional.of(convertFile);
+        }
+        return Optional.empty();
     }
 }
 
