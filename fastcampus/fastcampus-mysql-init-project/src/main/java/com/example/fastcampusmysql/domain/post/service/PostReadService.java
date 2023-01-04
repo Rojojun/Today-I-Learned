@@ -39,6 +39,18 @@ public class PostReadService {
                 .orElse(CursorRequest.NONE_KEY);
         return new PageCursor<>(cursorRequest.next(nextKeyValue), posts);
     }
+    public PageCursor<Post> getPostCursors(List<Long> memberIds, CursorRequest cursorRequest) {
+        var posts = getPostCursorEx(memberIds, cursorRequest);
+        var nextKeyValue = getNextKey(posts);
+        return new PageCursor<>(cursorRequest.next(nextKeyValue), posts);
+    }
+
+    private static long getNextKey(List<Post> posts){
+        return posts.stream()
+                .mapToLong(Post::getId)
+                .min()
+                .orElse(CursorRequest.NONE_KEY);
+    }
 
     private List<Post> getPostCursorEx(Long memberId, CursorRequest cursorRequest) {
         // Key가 Null인지 아닌지 분기하는 메소드
@@ -46,5 +58,12 @@ public class PostReadService {
             var posts = postRepository.findAllByLessThanIdAndMemberIdAndOrderByIdDesc(cursorRequest.key(), memberId, cursorRequest.size());
         }
         return postRepository.findAllByMemberIdAndOrderByIdDesc(memberId, cursorRequest.size());
+    }
+    private List<Post> getPostCursorEx(List<Long> memberIds, CursorRequest cursorRequest) {
+        // Key가 Null인지 아닌지 분기하는 메소드
+        if (cursorRequest.hasKey()) {
+            var posts = postRepository.findAllByLessThanIdAndInMemberIdAndOrderByIdDesc(cursorRequest.key(), memberIds, cursorRequest.size());
+        }
+        return postRepository.findAllByInMemberIdAndOrderByIdDesc(memberIds, cursorRequest.size());
     }
 }
