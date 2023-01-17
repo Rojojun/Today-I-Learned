@@ -18,10 +18,20 @@ public class GetTimelinePostsFacade {
     final private FollowReadService followReadService;
     final private PostReadService postReadService;
 
-    public PageCursor<Post> excute(Long memberId, CursorRequest cursorRequest) {
+    public PageCursor<Post> execute(Long memberId, CursorRequest cursorRequest) {
         /*
         1. meberId -> follow 조회
         2. 1번 결과로 게시물 조회
+         */
+        var followings = followReadService.getFollowers(memberId);
+        var followingMemberIds = followings.stream().map(Follow::getToMemberId).toList();
+        return postReadService.getPostCursors(followingMemberIds, cursorRequest);
+    }
+
+    public PageCursor<Post> executeByTimeline(Long memberId, CursorRequest cursorRequest) {
+        /*
+        1. Timeline 조회
+        2. n번에 해당하는 게시물 조회
          */
         var followings = followReadService.getFollowers(memberId);
         var followingMemberIds = followings.stream().map(Follow::getToMemberId).toList();
