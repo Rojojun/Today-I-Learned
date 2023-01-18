@@ -1,5 +1,6 @@
 package com.example.fastcampusmysql.domain.post.entity;
 
+import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -15,6 +16,7 @@ public class Timeline {
 
     final private LocalDateTime createdAt;
 
+    @Builder
     public Timeline(Long id, Long memberId, Long postId, LocalDateTime createdAt) {
         this.id = id;
         this.memberId = Objects.requireNonNull(memberId);

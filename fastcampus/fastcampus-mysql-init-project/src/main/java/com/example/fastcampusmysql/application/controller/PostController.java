@@ -1,5 +1,6 @@
 package com.example.fastcampusmysql.application.controller;
 
+import com.example.fastcampusmysql.application.facade.CreatePostFacade;
 import com.example.fastcampusmysql.application.facade.GetTimelinePostsFacade;
 import com.example.fastcampusmysql.domain.post.dto.DailyPostCount;
 import com.example.fastcampusmysql.domain.post.dto.DailyPostCountRequest;
@@ -25,11 +26,17 @@ public class PostController {
     final private PostWriteService postWriteService;
     final private PostReadService postReadService;
     final private GetTimelinePostsFacade getTimelinePostsFacade;
+    final private CreatePostFacade createPostFacade;
 
     @PostMapping("/upload")
+    public Long create(@RequestBody PostCommand command) {
+        return createPostFacade.excute(command);
+    }
+/*
     public Long create(PostCommand command) {
         return postWriteService.create(command);
     }
+*/
 
     @GetMapping("/read")
     public List<DailyPostCount> getDailyPostCounts(DailyPostCountRequest request) {
