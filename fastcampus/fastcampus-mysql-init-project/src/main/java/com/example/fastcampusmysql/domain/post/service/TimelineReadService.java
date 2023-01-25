@@ -15,13 +15,18 @@ import java.util.List;
 public class TimelineReadService {
     final private TimelineRepository timelineRepository;
 
-    public List<Timeline> getTimelines(Long memberId, CursorRequest cursorRequest) {
-
+    public PageCursor<Timeline> getTimelines(Long memberId, CursorRequest cursorRequest) {
+        var timelines = findAllBy(memberId, cursorRequest);
+        var nextKey = timelines.stream()
+                .mapToLong(Timeline::getId)
+                .min().orElse(CursorRequest.NONE_KEY);
+        return new PageCursor<>(cursorRequest.next(nextKey), timelines);
     }
 
-    private static long getNextKey(List<Post> posts){
-        return posts.stream()
-                .mapToLong(Post::getId)
-                .min()
-                .orElse(CursorRequest.NONE_KEY);
-    }}
+    public List<Timeline> findAllBy(Long memberId, CursorRequest cursorRequest) {
+        if (cursorRequest.hasKey()) {
+            return timelineRepository.findAllByLessThanIdAndMemberIdAndOrderByIdDesc(cursorRequest.key(), memberId, cursorRequest.size());
+        }
+        return timelineRepository.findAllByMemberIdAndOrderByIdDesc(memberId, cursorRequest.size());
+    }
+}
