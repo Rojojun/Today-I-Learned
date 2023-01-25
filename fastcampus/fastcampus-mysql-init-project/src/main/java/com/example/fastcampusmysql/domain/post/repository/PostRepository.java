@@ -129,7 +129,7 @@ public class PostRepository {
         var sql = String.format("""
                 SELECT *
                 FROM ids
-                WHERE id in :ids
+                WHERE id in (:ids)
                 """, TABLE);
 
         var params = new MapSqlParameterSource()

@@ -35,9 +35,10 @@ public class GetTimelinePostsFacade {
         /*
         1. Timeline 조회
         2. n번에 해당하는 게시물 조회
+        작성 성능과 트랜잭션 문제발생 + follow가 많을 경우 write에서 부하가 걸림
          */
         var timelines = timelineReadService.getTimelines(memberId, cursorRequest);
-        var postIds = timelines.stream().map(Timeline::getPostId).toList();
+        var postIds = timelines.body().stream().map(Timeline::getPostId).toList();
         var post = postReadService.getPosts(postIds);
 
         return new PageCursor(timelines.nextCursorRequest(), post);
