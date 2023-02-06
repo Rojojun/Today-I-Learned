@@ -16,7 +16,7 @@ public class MemberWriteService {
     final private MemberNicknameHistoryRepository memberNicknameHistoryRepository;
 
     // 선언적 트랜젝셔널을 선호하는 이유 DB와 종속적인 코드를 숨길 수 있기 때문
-    // 다른 방법은 트렌젝셔널 템플릿
+    // 다른 방법은 트렌젝셔널 템플릿 TransactionTemplate Study
     @Transactional
     public Member register(RegisterMemberCommand command) {
         /*
