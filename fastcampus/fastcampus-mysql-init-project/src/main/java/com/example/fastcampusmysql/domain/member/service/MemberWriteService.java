@@ -7,6 +7,7 @@ import com.example.fastcampusmysql.domain.member.repository.MemberNicknameHistor
 import com.example.fastcampusmysql.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -14,6 +15,9 @@ public class MemberWriteService {
     final private MemberRepository memberRepository;
     final private MemberNicknameHistoryRepository memberNicknameHistoryRepository;
 
+    // 선언적 트랜젝셔널을 선호하는 이유 DB와 종속적인 코드를 숨길 수 있기 때문
+    // 다른 방법은 트렌젝셔널 템플릿
+    @Transactional
     public Member register(RegisterMemberCommand command) {
         /*
             목표 - 회원정보(이메일, 닉네임, 생년월일)을 등록한다
