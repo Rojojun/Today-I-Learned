@@ -18,11 +18,13 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
+import javax.swing.text.html.Option;
 import javax.xml.transform.Result;
 import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Repository
@@ -36,6 +38,7 @@ public class PostRepository {
             .contents(resultSet.getString("contents"))
             .createdDate(resultSet.getObject("createdDate", LocalDate.class))
             .createdAt(resultSet.getObject("createdAt", LocalDateTime.class))
+            .likeCount(resultSet.getLong("likeCount"))
             .build();
 
     final static private RowMapper<DailyPostCount> DAILY_POST_COUNT_MAPPER = (ResultSet resultSet, int rowNum)
@@ -77,6 +80,15 @@ public class PostRepository {
         return new PageImpl(posts, pageRequest, getCount(meberId));
     }
 
+    public Optional<Post> findById(Long postId, Boolean requiredLock) {
+        var sql = String.format("SELECT * FROM %s WHERE id: postId", TABLE);
+        if (requiredLock) {
+            sql += "FOR UPDATE";
+        }
+        var params = new MapSqlParameterSource().addValue("postId", postId);
+        var nullablePost = namedParameterJdbcTemplate.queryForObject(sql, params, ROW_MAPPER);
+        return Optional.ofNullable(nullablePost);
+    }
     private Long getCount(Long memberId) {
         var sql = String.format("""
                 SELECT count(id)
@@ -211,5 +223,19 @@ public class PostRepository {
                 .createdAt(post.getCreatedAt())
                 .createdDate(post.getCreatedDate())
                 .build();
+    }
+
+    private Post update(Post post) {
+        var sql = String.format("""
+        UPDATE %s set memberId = :memberId,
+            contents = :contents,
+            createdDate = :createdDate,
+            likeCount = :likeCount,
+            createdAt = :createdAt
+        WHERE id = :id
+        """, TABLE);
+        SqlParameterSource params = new BeanPropertySqlParameterSource(post);
+        namedParameterJdbcTemplate.update(sql, params);
+        return post;
     }
 }
