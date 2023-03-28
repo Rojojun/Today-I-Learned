@@ -19,6 +19,8 @@ public class Post {
 
     private Long likeCount;
 
+    private Long version;
+
     final private LocalDateTime createdAt;
 
     @Builder
@@ -30,6 +32,7 @@ public class Post {
         this.createdDate = createdDate == null ? LocalDate.now() : createdDate;
         // 조회 시 null이면 0
         this.likeCount = likeCount == null ? 0 : likeCount;
+        this.version = version == null ? 0 : version;
         this.createdAt = createdAt == null ? LocalDateTime.now() : createdAt;
     }
 

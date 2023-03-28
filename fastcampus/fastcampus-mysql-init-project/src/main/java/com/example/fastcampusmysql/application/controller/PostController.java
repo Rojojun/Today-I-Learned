@@ -1,6 +1,7 @@
 package com.example.fastcampusmysql.application.controller;
 
 import com.example.fastcampusmysql.application.facade.CreatePostFacade;
+import com.example.fastcampusmysql.application.facade.CreatePostLikeFacade;
 import com.example.fastcampusmysql.application.facade.GetTimelinePostsFacade;
 import com.example.fastcampusmysql.domain.post.dto.DailyPostCount;
 import com.example.fastcampusmysql.domain.post.dto.DailyPostCountRequest;
@@ -27,6 +28,7 @@ public class PostController {
     final private PostReadService postReadService;
     final private GetTimelinePostsFacade getTimelinePostsFacade;
     final private CreatePostFacade createPostFacade;
+    final private CreatePostLikeFacade createPostLikeFacade
 
     @PostMapping("/upload")
     public Long create(@RequestBody PostCommand command) {
@@ -69,8 +71,13 @@ public class PostController {
         return getTimelinePostsFacade.executeByTimeline(memberId, cursorRequest);
     }
 
-    @PostMapping("/{postId}/like")
+    @PostMapping("/{postId}/like/v1")
     public void likePost(@PathVariable Long postId) {
         postWriteService.likePost(postId);
+    }
+
+    @PostMapping("/{postId}/like/v2")
+    public void likePostV2(@PathVariable Long postId, @RequestParam Long memberId) {
+        createPostLikeFacade.excute(postId, memberId);
     }
 }
