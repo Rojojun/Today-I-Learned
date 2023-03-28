@@ -31,6 +31,16 @@ public class PostLikeRepository {
             .createdAt(resultSet.getObject("createdAt", LocalDateTime.class))
             .build();
 
+    public Long count(Long postId) {
+        var sql = String.format("""
+                SELECT count(id)
+                FROM %s
+                WHERE postId = :postId
+                """, TABLE);
+        var params = new MapSqlParameterSource().addValue("postId", postId);
+        return jdbcTemplate.queryForObject(sql, params, Long.class);
+    }
+
     public PostLike save(PostLike postLike) {
         if (postLike.getId() == null) {
             return insert(postLike);
